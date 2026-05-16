@@ -530,3 +530,73 @@ const mr: Translations = {
 };
 
 export const TRANSLATIONS: Record<Lang, Translations> = { en, hi, mr };
+
+// Extended prompt banks (appended — used by memory-recall page directly)
+export const PROMPTS_EN = [
+  { icon: "🌅", question: "What did you do first thing this morning?" },
+  { icon: "🍽️", question: "What did you eat for your last meal? Describe it!" },
+  { icon: "📞", question: "Who did you last speak with? What did you talk about?" },
+  { icon: "🚶", question: "Describe the last walk you took. What did you see?" },
+  { icon: "😄", question: "What made you smile or laugh recently?" },
+  { icon: "🌸", question: "What is your favourite flower and why do you love it?" },
+  { icon: "🎵", question: "Name a song that makes you feel happy. Why does it?" },
+  { icon: "👨‍👩‍👧", question: "Describe a favourite memory with your family." },
+  { icon: "🍲", question: "What is your favourite home-cooked dish? How is it made?" },
+  { icon: "🌙", question: "What did you dream about last night, if you remember?" },
+  { icon: "🎁", question: "What is the best gift you have ever received?" },
+  { icon: "📚", question: "Tell me about a book or story you once loved." },
+  { icon: "🌳", question: "Describe your favourite place in nature." },
+  { icon: "👶", question: "What do you remember from your childhood home?" },
+  { icon: "☕", question: "Describe your perfect morning — what do you do?" },
+  { icon: "🏡", question: "What is your favourite room in your home and why?" },
+  { icon: "🌦️", question: "What is your favourite season and what do you love about it?" },
+  { icon: "👭", question: "Tell me about a friend who has meant a lot to you." },
+  { icon: "🎉", question: "Describe the most joyful celebration you can remember." },
+  { icon: "🙏", question: "What are three things you feel grateful for today?" },
+];
+
+export const PROMPTS_HI = [
+  { icon: "🌅", question: "आज सुबह उठकर सबसे पहले आपने क्या किया?" },
+  { icon: "🍽️", question: "आपने आखिरी बार क्या खाया? बताइए!" },
+  { icon: "📞", question: "आखिरी बार किससे बात की? क्या बात हुई?" },
+  { icon: "🚶", question: "आखिरी बार टहलने गए तो क्या-क्या देखा?" },
+  { icon: "😄", question: "हाल ही में किस बात पर हँसे या मुस्कुराए?" },
+  { icon: "🌸", question: "आपका पसंदीदा फूल कौन सा है और क्यों?" },
+  { icon: "🎵", question: "वो कौन सा गाना है जो सुनकर मन खुश हो जाता है?" },
+  { icon: "👨‍👩‍👧", question: "परिवार के साथ कोई एक खास याद बताइए।" },
+  { icon: "🍲", question: "आपका पसंदीदा घर का खाना क्या है? कैसे बनता है?" },
+  { icon: "🌙", question: "रात को आपने क्या सपना देखा, याद है?" },
+  { icon: "🎁", question: "अब तक मिला सबसे अच्छा तोहफा कौन सा था?" },
+  { icon: "📚", question: "कोई एक किताब या कहानी जो आपको बहुत पसंद थी।" },
+  { icon: "🌳", question: "प्रकृति में आपकी सबसे पसंदीदा जगह कौन सी है?" },
+  { icon: "👶", question: "बचपन के घर की कोई एक याद बताइए।" },
+  { icon: "☕", question: "आपकी आदर्श सुबह कैसी होगी?" },
+  { icon: "🏡", question: "घर में आपका पसंदीदा कमरा या कोना कौन सा है?" },
+  { icon: "🌦️", question: "आपका पसंदीदा मौसम कौन सा है और क्यों?" },
+  { icon: "👭", question: "एक ऐसे दोस्त के बारे में बताइए जो आपके दिल के करीब है।" },
+  { icon: "🎉", question: "अपनी ज़िंदगी का सबसे खुशी का जश्न बताइए।" },
+  { icon: "🙏", question: "आज आप किन तीन चीज़ों के लिए शुक्रगुज़ार हैं?" },
+];
+
+export const PROMPTS_MR = [
+  { icon: "🌅", question: "आज सकाळी उठल्यावर सगळ्यात आधी तुम्ही काय केले?" },
+  { icon: "🍽️", question: "शेवटचे जेवण काय होते? सांगा!" },
+  { icon: "📞", question: "शेवटचे कोणाशी बोललात? काय बोलणे झाले?" },
+  { icon: "🚶", question: "शेवटच्या फिरायला गेलात तेव्हा काय-काय पाहिले?" },
+  { icon: "😄", question: "अलीकडे कशावरून हसलात किंवा आनंद झाला?" },
+  { icon: "🌸", question: "तुमचे आवडते फूल कोणते आणि का?" },
+  { icon: "🎵", question: "असे एखादे गाणे सांगा जे ऐकले की मन प्रसन्न होते." },
+  { icon: "👨‍👩‍👧", question: "कुटुंबासोबतची एखादी आवडती आठवण सांगा." },
+  { icon: "🍲", question: "तुमचे आवडते घरचे जेवण कोणते? ते कसे बनते?" },
+  { icon: "🌙", question: "काल रात्री काय स्वप्न पडले, आठवतेय का?" },
+  { icon: "🎁", question: "आत्तापर्यंत मिळालेली सर्वात आवडती भेट कोणती?" },
+  { icon: "📚", question: "एखादे पुस्तक किंवा गोष्ट जी तुम्हाला खूप आवडत होती." },
+  { icon: "🌳", question: "निसर्गातील तुमची सर्वात आवडती जागा कोणती?" },
+  { icon: "👶", question: "बालपणीच्या घराची एखादी आठवण सांगा." },
+  { icon: "☕", question: "तुमची आदर्श सकाळ कशी असेल?" },
+  { icon: "🏡", question: "घरात तुमची सर्वात आवडती खोली किंवा जागा कोणती?" },
+  { icon: "🌦️", question: "तुमचा आवडता ऋतू कोणता आणि का?" },
+  { icon: "👭", question: "एखाद्या मित्र/मैत्रिणीबद्दल सांगा जो तुमच्या मनाच्या जवळ आहे." },
+  { icon: "🎉", question: "आयुष्यातील सर्वात आनंदाचा सण किंवा उत्सव सांगा." },
+  { icon: "🙏", question: "आज तुम्ही कोणत्या तीन गोष्टींसाठी कृतज्ञ आहात?" },
+];

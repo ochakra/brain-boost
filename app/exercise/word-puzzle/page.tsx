@@ -5,39 +5,12 @@ import dynamic from "next/dynamic";
 import { addExercisePoints } from "@/lib/progress";
 import type { Badge } from "@/lib/progress";
 import { useLang } from "@/components/LanguageProvider";
+import { WORDS_EN, WORDS_HI, WORDS_MR } from "@/lib/wordbanks";
+import { pickUnseen } from "@/lib/picker";
 
 const Confetti = dynamic(() => import("@/components/Confetti"), { ssr: false });
 const BadgeCelebration = dynamic(() => import("@/components/BadgeCelebration"), { ssr: false });
 const PointsPopup = dynamic(() => import("@/components/PointsPopup"), { ssr: false });
-
-const WORDS_EN = [
-  { word: "BRAIN", hint: "The organ inside your head that controls everything 🧠" },
-  { word: "SMILE", hint: "What your face does when you are happy 😊" },
-  { word: "MUSIC", hint: "Beautiful sounds you listen to 🎵" },
-  { word: "HEART", hint: "The organ that pumps blood and feels love ❤️" },
-  { word: "LIGHT", hint: "What the sun gives us every morning ☀️" },
-  { word: "PEACE", hint: "A calm and quiet feeling inside 🕊️" },
-  { word: "GARDEN", hint: "A place where flowers and vegetables grow 🌸" },
-  { word: "FRIEND", hint: "Someone you love spending time with 🤝" },
-  { word: "MEMORY", hint: "When you remember something from the past 💭" },
-  { word: "WISDOM", hint: "Knowledge gained from many years of life 📚" },
-];
-const WORDS_HI = [
-  { word: "KHUSHI",  hint: "खुशी — जब मन में आनंद हो 😊" },
-  { word: "PYAAR",   hint: "प्यार — जो दिल से महसूस होता है ❤️" },
-  { word: "SHANTI",  hint: "शांति — मन का सुकून 🕊️" },
-  { word: "UMEED",   hint: "उम्मीद — भविष्य पर भरोसा 🌟" },
-  { word: "SUNDAR",  hint: "सुंदर — जो देखने में अच्छा लगे 🌸" },
-  { word: "MITRATA", hint: "मित्रता — दोस्ती का एक और नाम 🤝" },
-];
-const WORDS_MR = [
-  { word: "ANAND",   hint: "आनंद — मनातील आनंद 😊" },
-  { word: "PREM",    hint: "प्रेम — हृदयातून जाणवते ❤️" },
-  { word: "SHANTI",  hint: "शांती — मनाची शांतता 🕊️" },
-  { word: "AASHA",   hint: "आशा — भविष्यावरचा विश्वास 🌟" },
-  { word: "SUNDAR",  hint: "सुंदर — पाहायला छान वाटते 🌸" },
-  { word: "MAITRI",  hint: "मैत्री — मित्रत्वाचे नाव 🤝" },
-];
 
 const MAX_GUESSES = 6;
 
@@ -66,10 +39,9 @@ const TILE = {
 
 export default function WordPuzzlePage() {
   const { t, lang } = useLang();
-  const WORDS = lang === "hi" ? WORDS_HI : lang === "mr" ? WORDS_MR : WORDS_EN;
-  const { word, hint } = WORDS[new Date().getDate() % WORDS.length];
-  const wordLen = word.length;
+  const bank = lang === "hi" ? WORDS_HI : lang === "mr" ? WORDS_MR : WORDS_EN;
 
+  const [entry, setEntry] = useState<{ word: string; hint: string } | null>(null);
   const [guesses, setGuesses] = useState<string[]>([]);
   const [current, setCurrent] = useState("");
   const [won, setWon] = useState(false);
@@ -80,6 +52,17 @@ export default function WordPuzzlePage() {
   const [pointsEarned, setPointsEarned] = useState(0);
   const [pointsKey, setPointsKey] = useState(0);
 
+  // Pick a new unseen word whenever the language changes
+  useEffect(() => {
+    setEntry(pickUnseen(`word-puzzle-${lang}`, bank));
+    setGuesses([]); setCurrent(""); setWon(false); setLost(false); setShowHint(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
+
+  const word = entry?.word ?? "";
+  const hint = entry?.hint ?? "";
+  const wordLen = word.length;
+
   const awardPoints = useCallback((guessCount: number) => {
     const pts = Math.max(10, 30 - (guessCount - 1) * 4);
     const { newBadges: nb } = addExercisePoints("word-puzzle", pts);
@@ -88,7 +71,7 @@ export default function WordPuzzlePage() {
   }, []);
 
   const submit = useCallback(() => {
-    if (current.length !== wordLen) { setShake(true); setTimeout(() => setShake(false), 400); return; }
+    if (!word || current.length !== wordLen) { setShake(true); setTimeout(() => setShake(false), 400); return; }
     const newGuesses = [...guesses, current];
     setGuesses(newGuesses); setCurrent("");
     if (current === word) { setWon(true); awardPoints(newGuesses.length); }
@@ -113,6 +96,11 @@ export default function WordPuzzlePage() {
     return () => window.removeEventListener("keydown", h);
   }, [handleKey]);
 
+  const nextPuzzle = () => {
+    setEntry(pickUnseen(`word-puzzle-${lang}`, bank));
+    setGuesses([]); setCurrent(""); setWon(false); setLost(false); setShowHint(false);
+  };
+
   const KEYS = [
     ["Q","W","E","R","T","Y","U","I","O","P"],
     ["A","S","D","F","G","H","J","K","L"],
@@ -127,6 +115,8 @@ export default function WordPuzzlePage() {
         usedLetters[ch] = s;
     });
   });
+
+  if (!entry) return <div className="min-h-screen flex items-center justify-center text-2xl">Loading...</div>;
 
   return (
     <main className="min-h-screen" style={{ background: "linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%)" }}>
@@ -171,7 +161,10 @@ export default function WordPuzzlePage() {
             <div className="text-5xl mb-2">🎉</div>
             <p className="text-2xl font-bold text-green-800">{t.wp_won}</p>
             <p className="text-green-700 text-lg mt-1">{t.wp_wordWas} <strong>{word}</strong></p>
-            <Link href="/" className="mt-3 inline-block bg-green-500 text-white rounded-full px-6 py-2 font-semibold text-lg hover:bg-green-600 transition-colors">{t.wp_backToHome}</Link>
+            <div className="flex gap-3 justify-center mt-3">
+              <button onClick={nextPuzzle} className="bg-purple-500 text-white rounded-full px-6 py-2 font-semibold text-lg hover:bg-purple-600 transition-colors">Next Puzzle →</button>
+              <Link href="/" className="bg-gray-200 text-gray-700 rounded-full px-6 py-2 font-semibold text-lg hover:bg-gray-300 transition-colors">{t.home}</Link>
+            </div>
           </div>
         )}
         {lost && !won && (
@@ -180,7 +173,10 @@ export default function WordPuzzlePage() {
             <p className="text-2xl font-bold text-red-700">{t.wp_lostTitle}</p>
             <p className="text-3xl font-bold text-red-800 mt-1">{word}</p>
             <p className="text-gray-600 mt-1">{hint}</p>
-            <Link href="/" className="mt-3 inline-block bg-purple-500 text-white rounded-full px-6 py-2 font-semibold text-lg hover:bg-purple-600 transition-colors">{t.wp_backToHome}</Link>
+            <div className="flex gap-3 justify-center mt-3">
+              <button onClick={nextPuzzle} className="bg-purple-500 text-white rounded-full px-6 py-2 font-semibold text-lg hover:bg-purple-600 transition-colors">Try Another →</button>
+              <Link href="/" className="bg-gray-200 text-gray-700 rounded-full px-6 py-2 font-semibold text-lg hover:bg-gray-300 transition-colors">{t.home}</Link>
+            </div>
           </div>
         )}
 
