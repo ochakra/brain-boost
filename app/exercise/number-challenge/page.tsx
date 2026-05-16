@@ -4,6 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { addExercisePoints } from "@/lib/progress";
 import type { Badge } from "@/lib/progress";
+import { useLang } from "@/components/LanguageProvider";
 
 const Confetti = dynamic(() => import("@/components/Confetti"), { ssr: false });
 const BadgeCelebration = dynamic(() => import("@/components/BadgeCelebration"), { ssr: false });
@@ -22,6 +23,7 @@ function generateQuestions(): Question[] {
 }
 
 export default function NumberChallengePage() {
+  const { t } = useLang();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [current, setCurrent] = useState(0);
   const [input, setInput] = useState("");
@@ -37,8 +39,7 @@ export default function NumberChallengePage() {
 
   const submit = useCallback(() => {
     if (!input) return;
-    const q = questions[current];
-    const correct = parseInt(input) === q.answer;
+    const q = questions[current], correct = parseInt(input) === q.answer;
     setFeedback(correct ? "correct" : "wrong");
     const newScore = correct ? score + 1 : score;
     if (correct) setScore(newScore);
@@ -47,8 +48,7 @@ export default function NumberChallengePage() {
       if (current + 1 >= questions.length) {
         const pts = newScore * 6;
         const { newBadges: nb } = addExercisePoints("number-challenge", pts);
-        setPointsEarned(pts); setPointsKey(k => k+1);
-        setNewBadges(nb);
+        setPointsEarned(pts); setPointsKey(k => k+1); setNewBadges(nb);
         window.dispatchEvent(new Event("progress-updated"));
         setDone(true);
         if (newScore >= 4) setShowConfetti(true);
@@ -74,8 +74,8 @@ export default function NumberChallengePage() {
         <div className="flex items-center gap-3 mb-8">
           <Link href="/" className="text-3xl hover:scale-110 transition-transform">←</Link>
           <div className="flex-1 text-center">
-            <h1 className="text-3xl font-bold text-blue-800">🔢 Number Challenge</h1>
-            <p className="text-blue-600 text-lg">Up to 30 points!</p>
+            <h1 className="text-3xl font-bold text-blue-800">{t.nc_title}</h1>
+            <p className="text-blue-600 text-lg">{t.nc_subtitle}</p>
           </div>
         </div>
 
@@ -85,17 +85,17 @@ export default function NumberChallengePage() {
               {questions.map((_, i) => <div key={i} className={`w-8 h-3 rounded-full transition-all ${i < current ? "bg-blue-500" : i === current ? "bg-blue-300" : "bg-gray-200"}`} />)}
             </div>
             <div className="text-5xl mb-4">{q.emoji}</div>
-            <div className={`bg-white rounded-3xl p-8 shadow-lg mb-6 transition-all border-2 ${feedback === "correct" ? "bg-green-50 border-green-400" : feedback === "wrong" ? "bg-red-50 border-red-300" : "border-blue-100"}`}>
+            <div className={`bg-white rounded-3xl p-8 shadow-lg mb-6 border-2 transition-all ${feedback === "correct" ? "bg-green-50 border-green-400" : feedback === "wrong" ? "bg-red-50 border-red-300" : "border-blue-100"}`}>
               <p className="text-5xl font-bold text-blue-800 mb-4">{q.q}</p>
-              {feedback === "correct" && <p className="text-3xl text-green-600 font-bold bounce-in">✅ Correct!</p>}
-              {feedback === "wrong" && <p className="text-2xl text-red-600 font-semibold bounce-in">Answer: <strong>{q.answer}</strong></p>}
+              {feedback === "correct" && <p className="text-3xl text-green-600 font-bold bounce-in">{t.nc_correct}</p>}
+              {feedback === "wrong" && <p className="text-2xl text-red-600 font-semibold bounce-in">{t.nc_answer} <strong>{q.answer}</strong></p>}
             </div>
             {!feedback && (
               <>
-                <input type="number" value={input} onChange={e => setInput(e.target.value)} placeholder="Type your answer..." autoFocus
+                <input type="number" value={input} onChange={e => setInput(e.target.value)} autoFocus
                   className="w-full text-center text-4xl font-bold border-2 border-blue-300 rounded-2xl p-4 mb-4 focus:outline-none focus:border-blue-500 bg-white" />
                 <button onClick={submit} disabled={!input} className="shine-btn w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white text-2xl font-bold py-4 rounded-2xl transition-all active:scale-95">
-                  Check Answer ✓
+                  {t.checkAnswer}
                 </button>
               </>
             )}
@@ -103,15 +103,15 @@ export default function NumberChallengePage() {
         ) : done ? (
           <div className="text-center bg-white rounded-3xl p-8 shadow-lg bounce-in">
             <div className="text-6xl mb-4">{score >= 4 ? "🏆" : score >= 2 ? "⭐" : "💪"}</div>
-            <p className="text-3xl font-bold text-blue-800 mb-2">{score >= 4 ? "Excellent!" : score >= 2 ? "Good job!" : "Keep practicing!"}</p>
-            <p className="text-2xl text-blue-700 mb-6">You got <strong>{score} out of 5</strong> correct!</p>
+            <p className="text-3xl font-bold text-blue-800 mb-2">{score >= 4 ? t.nc_excellent : score >= 2 ? t.nc_goodJob : t.nc_keepPracticing}</p>
+            <p className="text-2xl text-blue-700 mb-6">{t.nc_outOf(score, 5)}</p>
             <div className="flex gap-3 justify-center">
               <button onClick={() => { setQuestions(generateQuestions()); setCurrent(0); setScore(0); setDone(false); setShowConfetti(false); setInput(""); }}
-                className="bg-blue-500 text-white rounded-full px-6 py-3 font-semibold text-xl hover:bg-blue-600 transition-colors">Play Again 🔄</button>
-              <Link href="/" className="bg-gray-200 text-gray-700 rounded-full px-6 py-3 font-semibold text-xl hover:bg-gray-300 transition-colors">Home 🏠</Link>
+                className="bg-blue-500 text-white rounded-full px-6 py-3 font-semibold text-xl hover:bg-blue-600 transition-colors">{t.playAgain}</button>
+              <Link href="/" className="bg-gray-200 text-gray-700 rounded-full px-6 py-3 font-semibold text-xl hover:bg-gray-300 transition-colors">{t.home}</Link>
             </div>
           </div>
-        ) : <div className="text-center text-2xl text-blue-600">Loading...</div>}
+        ) : <div className="text-center text-2xl text-blue-600">...</div>}
       </div>
     </main>
   );
